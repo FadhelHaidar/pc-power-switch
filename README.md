@@ -13,7 +13,23 @@ Ensure you have the following ready:
 
 ---
 
-## 🛠️ 2. Raspberry Pi Setup (The Server)
+## 🛠️ 2. BIOS/UEFI Configuration (The Foundation)
+
+Before the software can wake the PC, the motherboard hardware must be told to listen for the "Magic Packet" while asleep.
+
+1. **Enter BIOS:** Restart your PC and repeatedly tap **Del**, **F2**, or **F12** (depending on your motherboard).
+2. **Enable WoL Settings:** Look for a section named **Advanced**, **Power Management**, or **ACPI**. You are looking for settings like:
+* **Wake on LAN** → `Enabled`
+* **Power On By PCI-E/PCI** → `Enabled`
+* **Resume by LAN** → `Enabled`
+* **ErP Ready** → `Disabled` (ErP cuts power too deeply for WoL to work).
+
+
+3. **Save and Exit:** Usually **F10**.
+
+---
+
+## 🛠️ 3. Raspberry Pi Setup (The Server)
 
 ### A. Clone the Project
 
@@ -104,7 +120,7 @@ sudo systemctl enable --now pc-power.service
 
 ---
 
-## 🏁 3. Windows PC Configuration (The Target)
+## 🏁 4. Windows PC Configuration (The Target)
 
 ### A. Enable OpenSSH Server
 
@@ -121,7 +137,7 @@ Set-Service -Name sshd -StartupType 'Automatic'
 
 1. **Disable Fast Startup:** (Control Panel > Power Options > Choose what power buttons do > Uncheck "Fast Startup").
 2. **Enable WoL in Device Manager:** (Network Adapters > Properties > Power Management > Check "Allow this device to wake the computer").
-3. **Allow Remote Shutdown:** Run `secpol.msc` > Local Policies > User Rights Assignment > Add `fadhel` to **"Force shutdown from a remote system"**.
+3. **Allow Remote Shutdown:** Run `secpol.msc` > Local Policies > User Rights Assignment > Add your user to **"Force shutdown from a remote system"**.
 
 ### C. The "First Handshake" (Don't skip!)
 
@@ -138,7 +154,7 @@ ssh username@100.XX.XXX.XXX
 
 ---
 
-## 📱 4. Mobile Access & PWA
+## 📱 5. Mobile Access & PWA
 
 1. Connect your phone to **Tailscale**.
 2. Open your browser to `http://100.x.x.x:5000` (Your Pi's Tailscale IP).
@@ -150,7 +166,7 @@ ssh username@100.XX.XXX.XXX
 
 ---
 
-## 🔍 5. Useful Management Commands
+## 🔍 6. Useful Management Commands
 
 | Action | Command |
 | --- | --- |
@@ -158,7 +174,7 @@ ssh username@100.XX.XXX.XXX
 | **Restart App** (after code changes) | `sudo systemctl restart pc-power.service` |
 | **View Live Logs** (for debugging) | `journalctl -u pc-power.service -f` |
 | **Test Wake-on-LAN manually** | `wakeonlan [YOUR_MAC_ADDRESS]` |
-| **Check Port 22 (SSH) status** | `nc -zv 100.68.123.100 22` |
+| **Check Port 22 (SSH) status** | `nc -zv 100.x.x.x 22` |
 
 ---
 
@@ -169,3 +185,7 @@ If the shutdown button still asks for a password even with the right one:
 1. On Windows, check `C:\ProgramData\ssh\sshd_config`.
 2. Scroll to the bottom and comment out (`#`) the `Match Group administrators` block.
 3. Restart the OpenSSH service in Windows `services.msc`.
+
+---
+
+Would you like me to help you create a **systemd health check script** to automatically restart the service if the Tailscale connection drops?
