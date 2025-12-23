@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC Control</title>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        :root {
+            --bg: #1a202c; --card: #2d3748; --green: #48bb78; --red: #f56565; --blue: #4299e1; --text: #f7fafc;
+        }
+        body {
+            font-family: -apple-system, system-ui, sans-serif;
+            background-color: var(--bg); color: var(--text);
+            display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;
+        }
+        .container {
+            text-align: center; background: var(--card); padding: 2rem;
+            border-radius: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            width: 85%; max-width: 350px;
+        }
+        .status-badge {
+            display: inline-block; padding: 10px 20px; border-radius: 999px;
+            font-weight: bold; font-size: 1rem; margin-bottom: 2rem; background: rgba(0,0,0,0.3);
+            transition: all 0.5s ease;
+        }
+        .online { color: var(--green); border: 2px solid var(--green); }
+        .offline { color: var(--red); border: 2px solid var(--red); }
+        
+        .btn {
+            width: 100%; height: 70px; border: none; border-radius: 16px;
+            font-size: 1.1rem; font-weight: bold; color: white;
+            cursor: pointer; transition: all 0.3s ease; margin-bottom: 15px;
+        }
+        .btn-on { background: var(--green); box-shadow: 0 4px 14px rgba(72, 187, 120, 0.3); }
+        .btn-off { background: var(--red); box-shadow: 0 4px 14px rgba(245, 101, 101, 0.3); }
+        .inactive { opacity: 0.2; filter: grayscale(1); transform: scale(0.95); }
+
+        input[type="password"] {
+            width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 12px;
+            border: 1px solid #4a5568; background: #1a202c; color: white; box-sizing: border-box;
+            outline: none;
+        }
+        input:focus { border-color: var(--blue); }
+
+        #overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 100; flex-direction: column;
+            justify-content: center; align-items: center;
+        }
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--blue); border-radius: 50%; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div id="overlay">
+    <div class="spinner"></div>
+    <p style="margin-top: 15px;">Processing...</p>
+</div>
+
+<div class="container">
+    <div id="status-badge" class="status-badge {% if online %}online{% else %}offline{% endif %}">
+        {% if online %} ● PC IS ONLINE {% else %} ○ PC IS OFFLINE {% endif %}
+    </div>
+
+    <form action="/on" method="post" onsubmit="showLoading()">
+        <button id="btn-on" class="btn btn-on {% if online %}inactive{% endif %}">
+            WAKE ON LAN
+        </button>
+    </form>
+
+    <div style="border-top: 1px solid #4a5568; margin: 20px 0; padding-top: 20px;">
+        <form action="/off" method="post" onsubmit="showLoading()">
+            <input type="password" name="pc_password" placeholder="Windows Password" required>
+            <button id="btn-off" class="btn btn-off {% if not online %}inactive{% endif %}">
+                SHUTDOWN PC
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function showLoading() { document.getElementById('overlay').style.display = 'flex'; }
+
+    function updateStatus() {
+        fetch('/status')
+            .then(res => res.json())
+            .then(data => {
+                const badge = document.getElementById('status-badge');
+                const btnOn = document.getElementById('btn-on');
+                const btnOff = document.getElementById('btn-off');
+                if (data.online) {
+                    badge.innerText = "● PC IS ONLINE"; badge.className = "status-badge online";
+                    btnOn.classList.add('inactive'); btnOff.classList.remove('inactive');
+                } else {
+                    badge.innerText = "○ PC IS OFFLINE"; badge.className = "status-badge offline";
+                    btnOn.classList.remove('inactive'); btnOff.classList.add('inactive');
+                }
+            });
+    }
+
+    setInterval(updateStatus, 10000);
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
+</script>
+</body>
+</html>
