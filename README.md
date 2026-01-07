@@ -185,7 +185,3 @@ If the shutdown button still asks for a password even with the right one:
 1. On Windows, check `C:\ProgramData\ssh\sshd_config`.
 2. Scroll to the bottom and comment out (`#`) the `Match Group administrators` block.
 3. Restart the OpenSSH service in Windows `services.msc`.
-
----
-
-Would you like me to help you create a **systemd health check script** to automatically restart the service if the Tailscale connection drops?
