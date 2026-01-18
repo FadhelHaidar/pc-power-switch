@@ -1,5 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#2d3748" rx="80"/>
-  <circle cx="256" cy="256" r="180" fill="none" stroke="#48bb78" stroke-width="28"/>
-  <line x1="256" y1="76" x2="256" y2="256" stroke="#48bb78" stroke-width="28" stroke-linecap="round"/>
+  <!-- Full bleed background for maskable icon -->
+  <rect width="512" height="512" fill="#2d3748"/>
+  <!-- Safe zone: content within 80% of canvas (51.2px padding on each side) -->
+  <!-- Power button circle - scaled down to fit safe zone -->
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#48bb78" stroke-width="24"/>
+  <!-- Power button line - scaled down to fit safe zone -->
+  <line x1="256" y1="106" x2="256" y2="256" stroke="#48bb78" stroke-width="24" stroke-linecap="round"/>
 </svg>
