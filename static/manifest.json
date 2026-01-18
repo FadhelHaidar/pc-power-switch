@@ -1,0 +1,18 @@
+{
+  "name": "PC Control",
+  "short_name": "PC Control",
+  "description": "Remote PC power control via Wake-on-LAN and shutdown",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a202c",
+  "theme_color": "#1a202c",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/static/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+} 
